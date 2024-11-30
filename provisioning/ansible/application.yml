@@ -13,3 +13,4 @@
     - nginx
     # - envcheck
     - webapp
+    - bench

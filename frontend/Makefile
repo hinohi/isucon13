@@ -5,7 +5,6 @@ ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 all: deps build
 
 deps:
-	corepack enable
 	yarn
 
 js_build:

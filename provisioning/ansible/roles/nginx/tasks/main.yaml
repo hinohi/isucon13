@@ -47,6 +47,15 @@
     - etc/nginx/tls/_.t.isucon.dev.crt
     - etc/nginx/tls/_.t.isucon.dev.key
 
+- name: "roles/nginx/tasks: Deploy ca-certificates"
+  become: true
+  copy:
+    src: "etc/nginx/tls/_.u.isucon.dev.crt"
+    dest: "/usr/local/share/ca-certificates/_.u.isucon.dev.crt"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
 - name: "roles/nginx/tasks: Delete old config"
   become: true
   file:

@@ -3,7 +3,7 @@
   roles:
     - base
     - apt
-    - isuadmin-user
+    # - isuadmin-user
     - isucon-user
     - globalip
     - xbuild

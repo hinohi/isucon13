@@ -5,7 +5,6 @@ export BRANCH := $(shell git branch --contains | fgrep '*' | cut -d ' ' -f 2)
 all:
 	make echo-commit_hash
 	make app-build
-	make envcheck-build
 	make init
 	make build
 
@@ -16,10 +15,6 @@ echo-commit_hash:
 .PHONY: app-build
 app-build: 
 	cd ../../provisioning/ansible/ && ./make_latest_files.sh
-
-.PHONY: envcheck-build
-envcheck-build:
-	make -C ../../envcheck build
 
 .PHONY: init
 init:

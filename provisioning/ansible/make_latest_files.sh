@@ -14,10 +14,6 @@ make
 cp -r ./dist/ ../webapp/public/
 cd ../provisioning/ansible
 
-cd ../../envcheck
-make
-cd ../provisioning/ansible
-
 cd ../../
 tar -zcvf webapp.tar.gz webapp
 mv webapp.tar.gz provisioning/ansible/roles/webapp/files

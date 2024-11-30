@@ -259,13 +259,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // HTTPサーバ起動
     if let Some(tcp_listener) = listenfd::ListenFd::from_env().take_tcp_listener(0)? {
-        axum::Server::from_tcp(tcp_listener)?
+        let tcp_listener =  tokio::net::TcpListener::from_std(tcp_listener)?;
+        axum::serve(tcp_listener, app).await?
     } else {
         const LISTEN_PORT: u16 = 8080;
-        axum::Server::bind(&std::net::SocketAddr::from(([0, 0, 0, 0], LISTEN_PORT)))
+        let addr = std::net::SocketAddr::from(([0, 0, 0, 0], LISTEN_PORT));
+        let tcp_listener = tokio::net::TcpListener::bind(&addr).await?;
+        axum::serve(tcp_listener, app).await?;
     }
-    .serve(app.into_make_service())
-    .await?;
 
     Ok(())
 }
@@ -1468,7 +1469,7 @@ async fn get_icon_handler(
     } else {
         let file = tokio::fs::File::open(FALLBACK_IMAGE).await.unwrap();
         let stream = tokio_util::io::ReaderStream::new(file);
-        let body = axum::body::StreamBody::new(stream);
+        let body = axum::body::Body::from_stream(stream);
 
         Ok((headers, body).into_response())
     }
@@ -1610,13 +1611,6 @@ async fn register_handler(
     Ok((StatusCode::CREATED, axum::Json(user)))
 }
 
-#[derive(Debug, serde::Serialize)]
-struct Session {
-    id: String,
-    user_id: i64,
-    expires: i64,
-}
-
 // ユーザログインAPI
 // POST /api/login
 async fn login_handler(
@@ -1651,11 +1645,11 @@ async fn login_handler(
     let cookie_store = CookieStore::new();
     if let Some(cookie_value) = cookie_store.store_session(sess).await? {
         let cookie =
-            axum_extra::extract::cookie::Cookie::build(DEFAULT_SESSION_ID_KEY, cookie_value)
+            axum_extra::extract::cookie::Cookie::build((DEFAULT_SESSION_ID_KEY, cookie_value))
                 .domain("u.isucon.dev")
                 .max_age(time::Duration::minutes(1000))
                 .path("/")
-                .finish();
+                .build();
         jar = jar.add(cookie);
     }
 

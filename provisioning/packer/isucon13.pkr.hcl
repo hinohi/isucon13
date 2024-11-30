@@ -34,9 +34,9 @@ locals {
   }
 }
 
-data "amazon-ami" "ubuntu-jammy" {
+data "amazon-ami" "ubuntu-noble" {
   filters = {
-    name                = "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"
+    name                = "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"
     root-device-type    = "ebs"
     virtualization-type = "hvm"
   }
@@ -52,7 +52,7 @@ source "amazon-ebs" "isucon13" {
   tags          = local.ami_tags
   snapshot_tags = local.ami_tags
 
-  source_ami    = "${data.amazon-ami.ubuntu-jammy.id}"
+  source_ami    = "${data.amazon-ami.ubuntu-noble.id}"
   region        = "ap-northeast-1"
   instance_type = "c5.4xlarge"
 
